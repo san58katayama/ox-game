@@ -168,6 +168,7 @@ class OXGame {
     this.player = { x: 7, y: 7 };
     this.isPlaying = true;
     this.nextItemId = 0;
+    this.elapsedTime = 0; // track elapsed game time in ms
 
     // Reset overlay displays
     document.getElementById('game-overlay').classList.remove('visible');
@@ -202,15 +203,19 @@ class OXGame {
     }
   }
 
-  // Determine game difficulty intervals
+  // Determine game difficulty intervals based on elapsed time (seconds)
   getSpawnInterval() {
-    // Spawns faster as score increases
-    return Math.max(500, 1600 - this.score * 35);
+    const elapsedSecs = this.elapsedTime / 1000;
+    if (elapsedSecs <= 10) {
+      return 1600; // baseline for first 10 seconds
+    }
+    // decrease interval by 80ms for every second beyond 10s, down to 350ms
+    const activeTime = elapsedSecs - 10;
+    return Math.max(350, 1600 - activeTime * 80);
   }
 
   getMoveInterval() {
-    // Items advance faster to the center as score increases
-    return Math.max(200, 450 - this.score * 6);
+    return 450; // constant speed, no acceleration
   }
 
   gameLoop(timestamp) {
@@ -219,6 +224,7 @@ class OXGame {
     const dt = timestamp - this.lastTime;
     this.lastTime = timestamp;
 
+    this.elapsedTime += dt;
     this.spawnTimer += dt;
     this.moveTimer += dt;
 
