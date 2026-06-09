@@ -15,24 +15,24 @@ const SPRITES = {
     [0, 0, 1, 1, 1, 1, 0, 0]
   ],
   circle: [
-    [0, 0, 1, 1, 1, 1, 0, 0],
-    [0, 1, 1, 0, 0, 1, 1, 0],
-    [1, 1, 0, 0, 0, 0, 1, 1],
-    [1, 1, 0, 0, 0, 0, 1, 1],
-    [1, 1, 0, 0, 0, 0, 1, 1],
-    [1, 1, 0, 0, 0, 0, 1, 1],
-    [0, 1, 1, 0, 0, 1, 1, 0],
-    [0, 0, 1, 1, 1, 1, 0, 0]
+    [0, 0, 0, 1, 1, 0, 0, 0],
+    [0, 0, 1, 0, 0, 1, 0, 0],
+    [0, 1, 0, 0, 0, 0, 1, 0],
+    [1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1],
+    [0, 1, 0, 0, 0, 0, 1, 0],
+    [0, 0, 1, 0, 0, 1, 0, 0],
+    [0, 0, 0, 1, 1, 0, 0, 0]
   ],
   cross: [
-    [1, 1, 0, 0, 0, 0, 1, 1],
-    [0, 1, 1, 0, 0, 1, 1, 0],
-    [0, 0, 1, 1, 1, 1, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 1],
+    [0, 1, 0, 0, 0, 0, 1, 0],
+    [0, 0, 1, 0, 0, 1, 0, 0],
     [0, 0, 0, 1, 1, 0, 0, 0],
     [0, 0, 0, 1, 1, 0, 0, 0],
-    [0, 0, 1, 1, 1, 1, 0, 0],
-    [0, 1, 1, 0, 0, 1, 1, 0],
-    [1, 1, 0, 0, 0, 0, 1, 1]
+    [0, 0, 1, 0, 0, 1, 0, 0],
+    [0, 1, 0, 0, 0, 0, 1, 0],
+    [1, 0, 0, 0, 0, 0, 0, 1]
   ]
 };
 
@@ -290,22 +290,36 @@ class OXGame {
   }
 
   moveItemsTowardCenter() {
-    for (let i = this.items.length - 1; i >= 0; i--) {
+    // 1. Sort items so those closest to the center move first (Manhattan distance)
+    const getDist = (item) => Math.abs(this.center.x - item.x) + Math.abs(this.center.y - item.y);
+    this.items.sort((a, b) => getDist(a) - getDist(b));
+
+    // 2. Move items one by one, checking for occupancy
+    for (let i = 0; i < this.items.length; i++) {
       const item = this.items[i];
 
-      // Calculate vector steps to Center (7,7)
+      // Calculate step vector
       const dx = Math.sign(this.center.x - item.x);
       const dy = Math.sign(this.center.y - item.y);
 
-      // Move cell
-      item.x += dx;
-      item.y += dy;
+      const targetX = item.x + dx;
+      const targetY = item.y + dy;
 
-      // Check if reached center (vanish)
-      if (item.x === this.center.x && item.y === this.center.y) {
-        // Spawn gentle vanish particles
-        this.spawnVanishParticles(item.x, item.y);
+      const isCenter = (targetX === this.center.x && targetY === this.center.y);
+
+      if (isCenter) {
+        // Reached center: vanish
+        this.spawnVanishParticles(targetX, targetY);
         this.items.splice(i, 1);
+        i--; // Adjust index because we removed an item
+      } else {
+        // Check if any other item is currently occupying the target cell
+        const isOccupied = this.items.some(other => other !== item && other.x === targetX && other.y === targetY);
+        if (!isOccupied) {
+          item.x = targetX;
+          item.y = targetY;
+        }
+        // If occupied, this item waits (does not move this tick, queuing up)
       }
     }
 
