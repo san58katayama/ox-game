@@ -387,8 +387,10 @@ class OXGame {
       return 'パンチ級';
     } else if (this.score <= 40) {
       return 'キック級';
-    } else {
+    } else if (this.score <= 50) {
       return '〇×信者';
+    } else {
+      return '神';
     }
   }
 
