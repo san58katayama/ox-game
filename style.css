@@ -1,0 +1,392 @@
+/* Retro Monochrome Design System */
+
+:root {
+  --font-pixel: 'DotGothic16', sans-serif;
+  --font-retro-gothic: 'DotGothic16', sans-serif;
+
+  /* Strict Black & White Palette */
+  --color-black: #000000;
+  --color-dark: #0d0d0d;
+  --color-white: #ffffff;
+  --color-grey-dark: #333333;
+  --color-grey-light: #cccccc;
+  
+  --arcade-glow: 0 0 20px rgba(255, 255, 255, 0.15);
+}
+
+/* Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-black);
+  color: var(--color-white);
+  font-family: var(--font-retro-gothic);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Ambient CRT flicker background */
+.screen-flicker {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.002);
+  pointer-events: none;
+  z-index: 1000;
+  animation: crt-flicker 0.15s infinite;
+}
+
+@keyframes crt-flicker {
+  0% { opacity: 0.98; }
+  50% { opacity: 1; }
+  100% { opacity: 0.99; }
+}
+
+/* Arcade Cabinet Shell */
+.arcade-cabinet {
+  width: 100%;
+  max-width: 440px;
+  padding: 24px 20px;
+  background: var(--color-dark);
+  border: 4px solid var(--color-white);
+  border-radius: 12px;
+  box-shadow: 0 20px 0 var(--color-black), 0 20px 40px rgba(255, 255, 255, 0.1), var(--arcade-glow);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (max-width: 480px) {
+  .arcade-cabinet {
+    max-width: 360px;
+    padding: 16px 12px;
+    border-radius: 0;
+    border-width: 3px;
+  }
+}
+
+/* Header scores */
+.arcade-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 2px dashed var(--color-white);
+  padding-bottom: 12px;
+}
+
+.game-title {
+  font-family: var(--font-pixel);
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+}
+
+.arcade-info {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  font-family: var(--font-pixel);
+  font-size: 0.65rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-label {
+  color: var(--color-grey-light);
+}
+
+.info-val {
+  font-size: 0.9rem;
+}
+
+/* Target Panel indicators */
+.target-panel {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.target-box {
+  flex: 1;
+  background: var(--color-black);
+  border: 2px solid var(--color-white);
+  padding: 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.highlight-box {
+  outline: 2px solid var(--color-white);
+  outline-offset: -6px;
+}
+
+.target-label {
+  font-family: var(--font-pixel);
+  font-size: 0.55rem;
+  color: var(--color-grey-light);
+}
+
+.target-val-none {
+  font-family: var(--font-pixel);
+  font-size: 1rem;
+  color: var(--color-grey-light);
+}
+
+.target-val-any {
+  font-family: var(--font-pixel);
+  font-size: 1rem;
+  animation: blink 1s step-end infinite;
+}
+
+.target-val-active {
+  font-family: var(--font-pixel);
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* Arcade Screen Wrapper & Monitor */
+.arcade-screen-wrapper {
+  background: var(--color-black);
+  padding: 10px;
+  border: 4px double var(--color-white);
+}
+
+.arcade-screen {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background: #08080c;
+  overflow: hidden;
+}
+
+/* Canvas config */
+#game-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+}
+
+/* CRT Scanlines Overlay */
+.scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.18) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Screen Menu Overlay */
+.menu-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 4;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.menu-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.menu-content {
+  width: 85%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.menu-title {
+  font-family: var(--font-pixel);
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+}
+
+.menu-title.blinking {
+  animation: blink 1.2s step-end infinite;
+}
+
+.gameover-text {
+  border: 2px solid var(--color-white);
+  padding: 6px 12px;
+  animation: shake 0.3s infinite;
+}
+
+@keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(0px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(2px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(2px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.menu-desc {
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.menu-desc-hint {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--color-grey-light);
+  border: 1px dashed var(--color-grey-dark);
+  padding: 6px;
+  width: 100%;
+}
+
+.result-board {
+  width: 100%;
+  border: 2px dashed var(--color-white);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: var(--font-pixel);
+  font-size: 0.65rem;
+  text-align: left;
+}
+
+.result-highlight {
+  font-size: 0.85rem;
+  float: right;
+  border-bottom: 2px solid var(--color-white);
+  padding-left: 10px;
+}
+
+/* Button mechanics */
+.arcade-btn-primary {
+  background: var(--color-white);
+  color: var(--color-black);
+  border: 2px solid var(--color-black);
+  outline: 2px solid var(--color-white);
+  padding: 10px 16px;
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 4px 4px 0px var(--color-grey-dark);
+  transition: all 0.05s ease;
+  margin-top: 8px;
+}
+
+.arcade-btn-primary:hover {
+  background: var(--color-black);
+  color: var(--color-white);
+  outline-color: var(--color-white);
+  box-shadow: 2px 2px 0px var(--color-white);
+}
+
+.arcade-btn-primary:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0px var(--color-white);
+}
+
+.arcade-btn-secondary {
+  background: var(--color-black);
+  color: var(--color-white);
+  border: 2px solid var(--color-white);
+  padding: 8px 12px;
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.arcade-btn-secondary:hover {
+  background: var(--color-white);
+  color: var(--color-black);
+}
+
+/* Footer panel controls */
+.arcade-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-top: 2px dashed var(--color-white);
+  padding-top: 16px;
+}
+
+.footer-buttons {
+  display: flex;
+  justify-content: center;
+}
+
+.arcade-instructions {
+  background: var(--color-black);
+  border: 1px solid var(--color-grey-dark);
+  padding: 12px;
+}
+
+.arcade-instructions h3 {
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  margin-bottom: 8px;
+  color: var(--color-grey-light);
+}
+
+.arcade-instructions p {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+.arcade-instructions p:last-child {
+  margin-bottom: 0;
+}
+
+.warning-text {
+  color: var(--color-grey-light);
+  border-left: 2px solid var(--color-white);
+  padding-left: 6px;
+  font-size: 0.7rem !important;
+  margin-top: 6px;
+}
+
+.hidden {
+  display: none !important;
+}

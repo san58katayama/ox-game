@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>〇×ゲーム | Katayama</title>
+  <meta name="description" content="白黒ドットのレトロなアーケードゲーム。中央に向かって進む〇と×を交互にキャッチし、ハイスコアを目指そう。連続で同じものを取るとゲームオーバー！">
+  
+  <!-- SEO & Social Cards -->
+  <meta property="og:title" content="〇×ゲーム | Katayama">
+  <meta property="og:description" content="交互に〇と×を取る、シンプルで熱い白黒レトロドットゲーム。">
+  <meta property="og:type" content="website">
+  
+  <!-- Pixel Art & Gothic Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <!-- Ambient CRT flicker background effect -->
+  <div class="screen-flicker"></div>
+
+  <div class="arcade-cabinet">
+    <header class="arcade-header">
+      <h1 class="game-title">〇×ゲーム</h1>
+      <div class="arcade-info">
+        <div class="info-item">
+          <span class="info-label">SCORE</span>
+          <span id="score" class="info-val">0000</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">HI-SCORE</span>
+          <span id="best-score" class="info-val">0000</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="target-panel">
+      <div class="target-box">
+        <span class="target-label">LAST</span>
+        <span id="last-item" class="target-val-none">-</span>
+      </div>
+      <div class="target-box highlight-box">
+        <span class="target-label">NEXT</span>
+        <span id="next-item" class="target-val-any">ANY</span>
+      </div>
+    </div>
+
+    <main class="arcade-screen-wrapper">
+      <div class="arcade-screen">
+        <!-- CRT scanline overlay -->
+        <div class="scanlines"></div>
+        
+        <!-- Game Over / Start Menu Overlay -->
+        <div id="game-overlay" class="menu-overlay visible">
+          <div id="start-menu" class="menu-content">
+            <h2 class="menu-title blinking">INSERT COIN</h2>
+            <p class="menu-desc">中央へ向かう 〇 と × を<br>交互にキャッチしよう！</p>
+            <p class="menu-desc-hint">同じものを連続で取ると<br>即ゲームオーバー！</p>
+            <button id="btn-start" class="arcade-btn-primary">START GAME</button>
+          </div>
+
+          <div id="gameover-menu" class="menu-content hidden">
+            <h2 class="menu-title gameover-text">GAME OVER</h2>
+            <div class="result-board">
+              <p>SCORE: <span id="final-score" class="result-highlight">0</span></p>
+              <p>RANK: <span id="rank-val" class="result-highlight">-</span></p>
+            </div>
+            <button id="btn-restart" class="arcade-btn-primary">PLAY AGAIN</button>
+          </div>
+        </div>
+
+        <!-- HTML5 Canvas for crisp retro render -->
+        <canvas id="game-canvas" width="300" height="300"></canvas>
+      </div>
+    </main>
+
+    <footer class="arcade-controls">
+      <div class="arcade-instructions">
+        <h3>CONTROLS</h3>
+        <p>【移動】矢印キー (↑↓←→) / WASD</p>
+        <p>【スマホ】画面スワイプで上下左右に移動</p>
+        <p class="warning-text">※中央に到達した〇×は消滅します</p>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
